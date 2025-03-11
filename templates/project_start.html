@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Project Start</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <h2>Project Start</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}  <!-- Ensure CSRF token is included -->
+    
+        <div>
+            {{ form.resume.label }} {{ form.resume(class="form-control") }}
+            {% if form.resume.errors %}
+                <p class="text-danger">{{ form.resume.errors[0] }}</p>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.linkedIn.label }} {{ form.linkedIn(class="form-control") }}
+            {% if form.linkedIn.errors %}
+                <p class="text-danger">{{ form.linkedIn.errors[0] }}</p>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.job_role.label }} {{ form.job_role(class="form-control") }}
+            {% if form.job_role.errors %}
+                <p class="text-danger">{{ form.job_role.errors[0] }}</p>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.industry.label }} {{ form.industry(class="form-control") }}
+            {% if form.industry.errors %}
+                <p class="text-danger">{{ form.industry.errors[0] }}</p>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.location.label }} {{ form.location(class="form-control") }}
+            {% if form.location.errors %}
+                <p class="text-danger">{{ form.location.errors[0] }}</p>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.work_type.label }} {{ form.work_type(class="form-control") }}
+        </div>
+    
+        <div>
+            {{ form.position_level.label }} {{ form.position_level(class="form-control") }}
+        </div>
+    
+        <div>
+            {{ form.salary.label }} {{ form.salary(class="form-control") }}
+        </div>
+    
+        <div>
+            {{ form.target_company.label }} {{ form.target_company(class="form-control") }}
+        </div>
+    
+        <button type="submit">Save Details</button>
+    </form>
+    <a href="{{ url_for('home') }}">Home</a>
+</body>
+</html>

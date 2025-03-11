@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <h2>Registered Users</h2>
+    
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Projects</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <ul>
+                    {% if user.projects %}
+                        {% for project in user.projects %}
+                            <li>
+                                {{ project.job_role }} - {{ project.industry }} 
+                                {% if project.resume %}
+                                    | <a href="{{ url_for('static', filename='uploads/' + project.resume) }}" target="_blank">Resume</a>
+                                {% endif %}
+                                {% if project.linkedIn %}
+                                    | <a href="{{ project.linkedIn }}" target="_blank">LinkedIn</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>No Projects</p>
+                    {% endif %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('home') }}">Home</a>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Boss Hunting Outreach Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    label { display: block; margin-top: 1rem; }
+    input, button { padding: 0.5rem; margin-top: 0.5rem; }
+    #result { margin-top: 2rem; white-space: pre-wrap; background: #f4f4f4; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Boss Hunting Outreach Generator</h1>
+  <form id="outreachForm">
+    <label for="candidate_name">Your Name:</label>
+    <input type="text" id="candidate_name" name="candidate_name" required>
+    
+    <label for="candidate_background">Your Background:</label>
+    <input type="text" id="candidate_background" name="candidate_background" required>
+    
+    <label for="company_name">Target Company:</label>
+    <input type="text" id="company_name" name="company_name" required>
+    
+    <label for="hiring_manager_name">Hiring Manager Name:</label>
+    <input type="text" id="hiring_manager_name" name="hiring_manager_name" required>
+    
+    <label for="company_challenge">Company Challenge/Initiative:</label>
+    <input type="text" id="company_challenge" name="company_challenge" required>
+    
+    <button type="submit">Generate Outreach Message</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("outreachForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const candidate_name = document.getElementById("candidate_name").value;
+      const candidate_background = document.getElementById("candidate_background").value;
+      const company_name = document.getElementById("company_name").value;
+      const hiring_manager_name = document.getElementById("hiring_manager_name").value;
+      const company_challenge = document.getElementById("company_challenge").value;
+      
+      const response = await fetch("/generate_message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          candidate_name,
+          candidate_background,
+          company_name,
+          hiring_manager_name,
+          company_challenge
+        })
+      });
+      
+      const data = await response.json();
+      if(data.error) {
+        document.getElementById("result").innerText = "Error: " + data.error;
+      } else {
+        document.getElementById("result").innerText = data.message;
+      }
+    });
+  </script>
+</body>
+</html>
