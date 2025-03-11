@@ -6,3 +6,4 @@ Flask-WTF
 email-validator
 gunicorn
 werkzeug==2.3.7
+flask-migrate
