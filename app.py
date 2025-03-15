@@ -150,6 +150,11 @@ def project_start():
     return render_template('project_start.html', form=form)
 
 
+@app.route('/project/<int:project_id>')
+@login_required
+def project_detail(project_id):
+    project = Project.query.get_or_404(project_id)
+    return render_template('project_detail.html', project=project)
 
 
 

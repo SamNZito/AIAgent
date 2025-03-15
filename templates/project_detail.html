@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Project Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ project.project_name }}</h2>
+    <p><strong>Target Job Role:</strong> {{ project.job_role }}</p>
+    <p><strong>Industry:</strong> {{ project.industry }}</p>
+    <p><strong>Location:</strong> {{ project.target_location }}</p>
+    <p><strong>Work Type:</strong> {{ project.work_type }}</p>
+    <p><strong>Position Level:</strong> {{ project.position_level }}</p>
+    <p><strong>Salary Range:</strong> ${{ project.salary_min }} - ${{ project.salary_max }}</p>
+    <p><strong>Desired Companies:</strong> {{ project.target_company }}</p>
+
+    <!-- Placeholder for Future AI Features -->
+    <div class="mt-4">
+        <h4>AI Tools</h4>
+        <p class="text-muted">Coming soon: AI resume tailoring, job/boss matching, automated outreach...</p>
+    </div>
+
+    <a class="btn btn-secondary mt-3" href="{{ url_for('projects') }}">Back to Projects</a>
+</div>
+{% endblock %}
