@@ -1,74 +1,147 @@
 {% extends "base.html" %}
 
-{% block title %}Start a Project{% endblock %}
+{% block title %}Start a Job Hunt Project{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2 class="mb-4">Start a New Project</h2>
-        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-            {{ form.hidden_tag() }}
-
-            <div class="mb-3">
-                {{ form.resume.label(class="form-label") }}
-                {{ form.resume(class="form-control") }}
-                {% for error in form.resume.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.linkedIn.label(class="form-label") }}
-                {{ form.linkedIn(class="form-control") }}
-                {% for error in form.linkedIn.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.job_role.label(class="form-label") }}
-                {{ form.job_role(class="form-control") }}
-                {% for error in form.job_role.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.industry.label(class="form-label") }}
-                {{ form.industry(class="form-control") }}
-                {% for error in form.industry.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.location.label(class="form-label") }}
-                {{ form.location(class="form-control") }}
-                {% for error in form.location.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-
-            <div class="mb-3">
-                {{ form.work_type.label(class="form-label") }}
-                {{ form.work_type(class="form-control") }}
-            </div>
-
-            <div class="mb-3">
-                {{ form.position_level.label(class="form-label") }}
-                {{ form.position_level(class="form-control") }}
-            </div>
-
-            <div class="mb-3">
-                {{ form.salary.label(class="form-label") }}
-                {{ form.salary(class="form-control") }}
-            </div>
-
-            <div class="mb-3">
-                {{ form.target_company.label(class="form-label") }}
-                {{ form.target_company(class="form-control") }}
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save Details</button>
-        </form>
+<div class="container mt-5">
+    <div class="progress mb-3">
+        <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
+    <h5 class="text-muted">Step 1 of 2</h5>
+
+    <form method="POST" enctype="multipart/form-data" class="needs-validation p-4 shadow-sm bg-white rounded" novalidate>
+        {{ form.hidden_tag() }}
+
+        <!-- Display Flash Messages for Errors -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Job Hunt Details -->
+        <h4 class="mt-4 mb-3">Job Hunt Details</h4>
+        
+        <div class="mb-3">
+            {{ form.project_name.label(class="form-label") }}
+            {{ form.project_name(class="form-control", required=True) }}
+            {% if form.project_name.errors %}
+                <div class="text-danger">{{ form.project_name.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.job_role.label(class="form-label") }}
+            {{ form.job_role(class="form-control", required=True) }}
+            {% if form.job_role.errors %}
+                <div class="text-danger">{{ form.job_role.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Target Industry Dropdown -->
+        <div class="mb-3">
+            {{ form.industry.label(class="form-label") }}
+            {{ form.industry(class="form-select", id="industrySelect", required=True) }}
+            {% if form.industry.errors %}
+                <div class="text-danger">{{ form.industry.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Other Industry Input Field -->
+        <div class="mb-3" id="industryOtherDiv" style="display: none;">
+            {{ form.industry_other.label(class="form-label") }}
+            {{ form.industry_other(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            {{ form.target_location.label(class="form-label") }}
+            {{ form.target_location(class="form-control", required=True) }}
+            {% if form.target_location.errors %}
+                <div class="text-danger">{{ form.target_location.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Work Type Selection -->
+        <div class="mb-3">
+            <label class="form-label">Work Type</label>
+            <div class="btn-group w-100" role="group">
+                <!-- Radio Buttons with Flask-WTForms Data -->
+                <input type="radio" class="btn-check" name="work_type" id="remote" value="Remote" 
+                    {% if form.work_type.data == "Remote" %}checked{% endif %} required>
+                <label class="btn btn-outline-primary" for="remote">Remote</label>
+
+                <input type="radio" class="btn-check" name="work_type" id="hybrid" value="Hybrid" 
+                    {% if form.work_type.data == "Hybrid" %}checked{% endif %} required>
+                <label class="btn btn-outline-primary" for="hybrid">Hybrid</label>
+
+                <input type="radio" class="btn-check" name="work_type" id="onsite" value="On-Site" 
+                    {% if form.work_type.data == "On-Site" %}checked{% endif %} required>
+                <label class="btn btn-outline-primary" for="onsite">On-Site</label>
+            </div>
+
+            <!-- Display Validation Errors -->
+            {% if form.work_type.errors %}
+                <div class="text-danger mt-2">{{ form.work_type.errors[0] }}</div>
+            {% endif %}
+        </div>  
+
+
+        <div class="mb-3">
+            {{ form.position_level.label(class="form-label") }}
+            {{ form.position_level(class="form-select", required=True) }}
+            {% if form.position_level.errors %}
+                <div class="text-danger">{{ form.position_level.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Salary Range -->
+        <div class="row mb-3">
+            <label class="form-label">Target Salary Range</label>
+            <div class="col input-group">
+                <span class="input-group-text">$</span>
+                {{ form.salary_min(class="form-control", required=True) }}
+                {% if form.salary_min.errors %}
+                    <div class="text-danger">{{ form.salary_min.errors[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="col input-group">
+                <span class="input-group-text">$</span>
+                {{ form.salary_max(class="form-control", required=True) }}
+                {% if form.salary_max.errors %}
+                    <div class="text-danger">{{ form.salary_max.errors[0] }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form.target_company.label(class="form-label") }}
+            {{ form.target_company(class="form-control", required=True) }}
+            {% if form.target_company.errors %}
+                <div class="text-danger">{{ form.target_company.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Show/hide "Other" industry field based on selection
+    document.getElementById("industrySelect").addEventListener("change", function() {
+        let industryOtherDiv = document.getElementById("industryOtherDiv");
+        if (this.value === "other") {
+            industryOtherDiv.style.display = "block";
+        } else {
+            industryOtherDiv.style.display = "none";
+        }
+    });
+</script>
 {% endblock %}
+

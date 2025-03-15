@@ -72,47 +72,40 @@ def signup():
 
 
 @app.route('/project-start', methods=['GET', 'POST'])
-@login_required  # Ensure only logged-in users can start a project
+@login_required
 def project_start():
     form = ProjectStartForm()
 
     if request.method == "POST":
-        print("🚀 Project Start form was submitted!")
-        print("📩 Raw Form Data:", request.form)
-
         if form.validate_on_submit():
-            print("✅ Form validation successful!")
-
-            resume_filename = None
-            if 'resume' in request.files:
-                resume_file = request.files['resume']
-                if resume_file and allowed_file(resume_file.filename):
-                    resume_filename = secure_filename(resume_file.filename)
-                    resume_file.save(os.path.join(app.config["UPLOAD_FOLDER"], resume_filename))
+            selected_industry = form.industry.data
+            industry_other = form.industry_other.data if selected_industry == "other" else None
 
             new_project = Project(
-                resume=resume_filename,
-                linkedIn=form.linkedIn.data,
+                project_name=form.project_name.data,
                 job_role=form.job_role.data,
-                industry=form.industry.data,
-                location=form.location.data,
+                industry=selected_industry,
+                industry_other=industry_other,
+                target_location=form.target_location.data,
                 work_type=form.work_type.data,
                 position_level=form.position_level.data,
-                salary=form.salary.data,
+                salary_min=form.salary_min.data,
+                salary_max=form.salary_max.data,
                 target_company=form.target_company.data,
-                user_id=current_user.id  # Link project to the logged-in user
+                user_id=current_user.id
             )
 
             db.session.add(new_project)
             db.session.commit()
 
-            print(f"📝 Project created: {new_project.job_role}, {new_project.industry} by {current_user.name}")
-            flash("Project details saved successfully!", "success")
+            flash("Project created successfully!", "success")
             return redirect(url_for('projects'))
         else:
-            print("❌ Form validation failed:", form.errors)
+            flash("Please correct the errors in the form before continuing.", "danger")
 
     return render_template('project_start.html', form=form)
+
+
 
 
 
@@ -120,19 +113,18 @@ def find_matching_companies(user_project):
     """Query LinkedIn API to find matching companies."""
     
     headers = {
-        "Authorization": f"Bearer {current_app.config['LINKEDIN_ACCESS_TOKEN']}",
+        "Authorization": f"Bearer {current_app.config.get('LINKEDIN_ACCESS_TOKEN', '')}",
         "Content-Type": "application/json"
     }
 
-    # LinkedIn API search endpoint (modify based on access level)
     url = "https://api.linkedin.com/v2/organizationSearch"
 
     params = {
         "q": "industry",
         "industry": user_project.industry,
-        "location": user_project.location,
+        "location": user_project.target_location,  # ✅ Fixed: Use "target_location"
         "work_type": user_project.work_type,
-        "limit": 5  # Get top 5 results
+        "limit": 5
     }
 
     response = requests.get(url, headers=headers, params=params)
@@ -145,13 +137,14 @@ def find_matching_companies(user_project):
                 "name": company.get("name", "Unknown"),
                 "industry": company.get("industry", "N/A"),
                 "location": company.get("headquarters", {}).get("city", "Unknown"),
-                "work_type": user_project.work_type  # No direct mapping, so keeping user's input
+                "work_type": user_project.work_type
             }
             for company in companies
         ]
     else:
         print("LinkedIn API Error:", response.json())
         return []
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -184,17 +177,26 @@ def users():
     all_users = User.query.all()
     return render_template('users.html', users=all_users)
 
+# @app.route('/projects')
+# @login_required
+# def projects():
+#     user_projects = Project.query.filter_by(user_id=current_user.id).all()
+    
+#     project_matches = []
+#     for project in user_projects:
+#         matched_companies = find_matching_companies(project)
+#         project_matches.append({"project": project, "matches": matched_companies})
+
+#     return render_template('projects.html', projects=project_matches)
+
 @app.route('/projects')
 @login_required
 def projects():
+    # Get projects created by the logged-in user
     user_projects = Project.query.filter_by(user_id=current_user.id).all()
-    
-    project_matches = []
-    for project in user_projects:
-        matched_companies = find_matching_companies(project)
-        project_matches.append({"project": project, "matches": matched_companies})
 
-    return render_template('projects.html', projects=project_matches)
+    return render_template('projects.html', projects=user_projects)
+
 
 
 @login_manager.user_loader

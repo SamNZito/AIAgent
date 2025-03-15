@@ -1,48 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Your Projects{% endblock %}
+{% block title %}My Projects{% endblock %}
 
 {% block content %}
-    <h2>Your Projects</h2>
+<div class="container mt-4">
+    <h2>My Projects</h2>
 
     {% if projects %}
-        <div class="row">
-            {% for project_data in projects %}
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ project_data.project.job_role }} - {{ project_data.project.industry }}</h5>
-                            <p class="card-text"><strong>Location:</strong> {{ project_data.project.location }}</p>
-                            <p class="card-text"><strong>Work Type:</strong> {{ project_data.project.work_type }}</p>
-                            <p class="card-text"><strong>Salary:</strong> {{ project_data.project.salary or "N/A" }}</p>
-
-                            {% if project_data.project.resume %}
-                                <a href="{{ url_for('static', filename='uploads/' + project_data.project.resume) }}" class="btn btn-info" target="_blank">View Resume</a>
-                            {% endif %}
-
-                            {% if project_data.project.linkedIn %}
-                                <a href="{{ project_data.project.linkedIn }}" class="btn btn-primary" target="_blank">LinkedIn</a>
-                            {% endif %}
-
-                            <h6>Recommended Companies:</h6>
-                            {% if project_data.matches %}
-                                <ul>
-                                    {% for company in project_data.matches %}
-                                        <li>
-                                            <strong>{{ company.name }}</strong> ({{ company.industry }}) - {{ company.location }}
-                                            <a href="https://www.linkedin.com/company/{{ company.name }}" target="_blank">🔗 LinkedIn</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No Matches Found</p>
-                            {% endif %}
-                        </div>
-                    </div>
+        <div class="list-group mt-3">
+            {% for project in projects %}
+                <div class="list-group-item">
+                    <h5>{{ project.project_name }}</h5>
+                    <p><strong>Target Job Role:</strong> {{ project.job_role }}</p>
+                    <p><strong>Industry:</strong> {{ project.industry }}</p>
+                    {% if project.industry == "other" and project.industry_other %}
+                        <p><strong>Custom Industry:</strong> {{ project.industry_other }}</p>
+                    {% endif %}
+                    <p><strong>Location:</strong> {{ project.target_location }}</p>
+                    <p><strong>Work Type:</strong> {{ project.work_type }}</p>
+                    <p><strong>Position Level:</strong> {{ project.position_level }}</p>
+                    <p><strong>Salary Range:</strong> ${{ project.salary_min }} - ${{ project.salary_max }}</p>
+                    <p><strong>Desired Companies:</strong> {{ project.target_company }}</p>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>No projects found.</p>
+        <p class="text-muted mt-3">You haven't created any projects yet.</p>
     {% endif %}
+</div>
 {% endblock %}

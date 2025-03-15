@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 116e5d4d606c
+Revision ID: 433d7e8720ee
 Revises: 
-Create Date: 2025-02-25 15:08:09.897712
+Create Date: 2025-03-15 14:47:07.765646
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '116e5d4d606c'
+revision = '433d7e8720ee'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,12 +28,16 @@ def upgrade():
     )
     op.create_table('project',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('resume', sa.String(length=255), nullable=True),
+    sa.Column('linkedIn', sa.String(length=255), nullable=True),
+    sa.Column('project_name', sa.String(length=150), nullable=False),
     sa.Column('job_role', sa.String(length=100), nullable=False),
     sa.Column('industry', sa.String(length=100), nullable=False),
-    sa.Column('location', sa.String(length=200), nullable=False),
-    sa.Column('work_type', sa.String(length=50), nullable=False),
+    sa.Column('target_location', sa.String(length=200), nullable=False),
+    sa.Column('work_type', sa.Enum('Remote', 'Hybrid', 'On-Site', name='work_type_enum'), nullable=False),
     sa.Column('position_level', sa.String(length=50), nullable=False),
-    sa.Column('salary', sa.String(length=50), nullable=True),
+    sa.Column('salary_min', sa.Numeric(precision=10, scale=2), nullable=True),
+    sa.Column('salary_max', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('target_company', sa.Text(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),

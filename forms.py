@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, FileField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, Regexp, URL, Optional
+from wtforms import StringField, PasswordField, FileField, SelectField, SubmitField, DecimalField, TextAreaField, RadioField
+from wtforms.validators import DataRequired, Email, Length, Regexp, URL, Optional, NumberRange
 
 class SignUpForm(FlaskForm):
     name = StringField("Name", validators=[
@@ -15,6 +15,7 @@ class SignUpForm(FlaskForm):
     ])
     submit = SubmitField("Sign Up")
 
+
 class OptionalURLField(StringField):
     """Custom field to handle empty LinkedIn input properly."""
     def process_formdata(self, valuelist):
@@ -24,19 +25,53 @@ class OptionalURLField(StringField):
                 self.data = None
 
 class ProjectStartForm(FlaskForm):
-    resume = FileField("Upload Resume (PDF, DOC, DOCX)")
-    linkedIn = OptionalURLField("LinkedIn Profile (Optional)", validators=[Optional(), URL()])
-    job_role = StringField("Desired Job Role", validators=[DataRequired()])
-    industry = StringField("Industry Preferences", validators=[DataRequired()])
-    location = StringField("Location (City, State, Zip)", validators=[DataRequired()])
-    work_type = SelectField("Work Type", choices=[("Remote", "Remote"), ("Hybrid", "Hybrid"), ("Onsite", "Onsite")])
+    project_name = StringField("Project Name", validators=[DataRequired()],
+                               render_kw={"placeholder": "Name your job hunt project"})
+
+    job_role = StringField("Target Job Role", validators=[DataRequired()],
+                           render_kw={"placeholder": "e.g. UX Designer"})
+
+    industry = SelectField("Target Industry", choices=[
+        ("technology", "Technology"),
+        ("finance", "Finance"),
+        ("healthcare", "Healthcare"),
+        ("marketing", "Marketing"),
+        ("education", "Education"),
+        ("engineering", "Engineering"),
+        ("consulting", "Consulting"),
+        ("other", "Other")  # "Other" option added
+    ], validators=[DataRequired()])
+
+    industry_other = StringField("Specify Industry (if 'Other')", validators=[Optional()],
+                                 render_kw={"placeholder": "Enter your industry"})
+
+    target_location = StringField("Target Location", validators=[DataRequired()],
+                                  render_kw={"placeholder": "City, Country"})
+
+    work_type = RadioField("Work Type", choices=[
+        ("Remote", "Remote"),
+        ("Hybrid", "Hybrid"),
+        ("On-Site", "On-Site")
+    ], validators=[DataRequired()])
+
     position_level = SelectField("Position Level", choices=[
-        ("IC", "Individual Contributor"),
+        ("Intern", "Intern"),
+        ("Junior", "Junior"),
+        ("Mid", "Mid-Level"),
+        ("Senior", "Senior"),
         ("Manager", "Manager"),
         ("Director", "Director"),
         ("VP", "VP"),
         ("C-Level", "C-Level")
-    ])
-    salary = StringField("Salary Expectations")
-    target_company = StringField("Target Company Description")
-    submit = SubmitField("Save Project Details")
+    ], validators=[DataRequired()])
+
+    salary_min = DecimalField("Min Salary", validators=[DataRequired(), NumberRange(min=0)], 
+                              render_kw={"placeholder": "Min"})
+
+    salary_max = DecimalField("Max Salary", validators=[DataRequired(), NumberRange(min=0)], 
+                              render_kw={"placeholder": "Max"})
+
+    target_company = TextAreaField("Desired Companies", validators=[DataRequired()],
+                                   render_kw={"placeholder": "Describe your ideal companies"})
+
+    submit = SubmitField("Continue")
