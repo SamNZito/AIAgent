@@ -16,3 +16,12 @@ button {
 button:hover {
     background-color: darkblue;
 }
+
+#darkModeToggle {
+    position: absolute;
+    top: 70px;
+    right: 15px;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+
+}

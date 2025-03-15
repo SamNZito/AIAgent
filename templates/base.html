@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}First Strike{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="light-mode">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('home') }}">First Strike</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('projects') }}">My Projects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('project_start') }}">Start Project</a></li>  
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dark Mode Button Positioned Top-Right -->
+    <div class="container-fluid d-flex justify-content-end mt-2 pe-3">
+        <button class="btn btn-outline-light btn-sm" id="darkModeToggle">🌙 Dark Mode</button>
+    </div>
+
+    <div class="container mt-3">
+        <!-- Flash Messages (Auto-hide after 5s) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show fade-out" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        document.getElementById("darkModeToggle").addEventListener("click", function() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+        });
+
+        if (localStorage.getItem("darkMode") === "true") {
+            document.body.classList.add("dark-mode");
+        }
+
+        // Auto-hide Flash Messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.fade-out').forEach((alert) => {
+                let fadeEffect = setInterval(() => {
+                    if (!alert.style.opacity) {
+                        alert.style.opacity = 1;
+                    }
+                    if (alert.style.opacity > 0) {
+                        alert.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeEffect);
+                        alert.remove();
+                    }
+                }, 50);
+            });
+        }, 5000);
+    </script>
+
+    <style>
+        /* Dark Mode Styling */
+        .dark-mode { background-color: #121212; color: white; }
+
+        /* Positioning Dark Mode Button */
+        #darkModeToggle {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+    </style>
+</body>
+</html>

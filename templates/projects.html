@@ -1,68 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Your Projects</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Your Projects{% endblock %}
+
+{% block content %}
     <h2>Your Projects</h2>
 
     {% if projects %}
-    <table border="1">
-        <tr>
-            <th>Job Role</th>
-            <th>Industry</th>
-            <th>Location</th>
-            <th>Work Type</th>
-            <th>Position Level</th>
-            <th>Salary</th>
-            <th>Target Company</th>
-            <th>Resume</th>
-            <th>LinkedIn</th>
-            <th>Recommended Companies</th>
-        </tr>
-        {% for project_data in projects %}
-        <tr>
-            <td>{{ project_data.project.job_role }}</td>
-            <td>{{ project_data.project.industry }}</td>
-            <td>{{ project_data.project.location }}</td>
-            <td>{{ project_data.project.work_type }}</td>
-            <td>{{ project_data.project.position_level }}</td>
-            <td>{{ project_data.project.salary }}</td>
-            <td>{{ project_data.project.target_company }}</td>
-            <td>
-                {% if project_data.project.resume %}
-                    <a href="{{ url_for('static', filename='uploads/' + project_data.project.resume) }}" target="_blank">View Resume</a>
-                {% else %}
-                    No Resume
-                {% endif %}
-            </td>
-            <td>
-                {% if project_data.project.linkedIn %}
-                    <a href="{{ project_data.project.linkedIn }}" target="_blank">LinkedIn</a>
-                {% else %}
-                    No LinkedIn
-                {% endif %}
-            </td>
-            <td>
-                {% if project_data.matches %}
-                    <ul>
-                        {% for company in project_data.matches %}
-                            <li>
-                                <strong>{{ company.name }}</strong> ({{ company.industry }}) - {{ company.location }}
-                                <a href="https://www.linkedin.com/company/{{ company.name }}" target="_blank">🔗 View on LinkedIn</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    No Matches Found
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+        <div class="row">
+            {% for project_data in projects %}
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ project_data.project.job_role }} - {{ project_data.project.industry }}</h5>
+                            <p class="card-text"><strong>Location:</strong> {{ project_data.project.location }}</p>
+                            <p class="card-text"><strong>Work Type:</strong> {{ project_data.project.work_type }}</p>
+                            <p class="card-text"><strong>Salary:</strong> {{ project_data.project.salary or "N/A" }}</p>
+
+                            {% if project_data.project.resume %}
+                                <a href="{{ url_for('static', filename='uploads/' + project_data.project.resume) }}" class="btn btn-info" target="_blank">View Resume</a>
+                            {% endif %}
+
+                            {% if project_data.project.linkedIn %}
+                                <a href="{{ project_data.project.linkedIn }}" class="btn btn-primary" target="_blank">LinkedIn</a>
+                            {% endif %}
+
+                            <h6>Recommended Companies:</h6>
+                            {% if project_data.matches %}
+                                <ul>
+                                    {% for company in project_data.matches %}
+                                        <li>
+                                            <strong>{{ company.name }}</strong> ({{ company.industry }}) - {{ company.location }}
+                                            <a href="https://www.linkedin.com/company/{{ company.name }}" target="_blank">🔗 LinkedIn</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No Matches Found</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
         <p>No projects found.</p>
     {% endif %}
-    <a href="{{ url_for('home') }}">Home</a>
-</body>
-</html>
+{% endblock %}
