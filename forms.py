@@ -75,3 +75,8 @@ class ProjectStartForm(FlaskForm):
                                    render_kw={"placeholder": "Describe your ideal companies"})
 
     submit = SubmitField("Continue")
+    
+class ResumeUploadForm(FlaskForm):
+    resume = FileField("Upload Resume (PDF, DOC, DOCX)", validators=[Optional()])
+    linkedin_url = StringField("LinkedIn Profile (Optional)", validators=[Optional(), URL()])
+    submit = SubmitField("Save")

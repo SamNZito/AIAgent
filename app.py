@@ -4,11 +4,12 @@ from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
-from forms import SignUpForm, ProjectStartForm
+from forms import SignUpForm, ProjectStartForm, ResumeUploadForm
 from models import User, Project  # Import models after db initialization
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from extensions import db, migrate, bcrypt, login_manager  # Import login_manager
 import requests
+import shutil
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -38,7 +39,27 @@ def allowed_file(filename):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    form = ResumeUploadForm()
+
+    if request.method == "POST" and form.validate_on_submit():
+        resume_filename = None
+
+        # Handle Resume Upload
+        if 'resume' in request.files:
+            resume_file = request.files['resume']
+            if resume_file and allowed_file(resume_file.filename):
+                resume_filename = secure_filename(resume_file.filename)
+                resume_file.save(os.path.join(app.config["UPLOAD_FOLDER"], resume_filename))
+                current_user.resume = resume_filename  # Save to user profile
+
+        # Update user LinkedIn URL
+        current_user.linkedin_url = form.linkedin_url.data
+        db.session.commit()
+
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for('home'))
+
+    return render_template('home.html', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -70,6 +91,20 @@ def signup():
 
     return render_template('signup.html', form=form)
 
+def generate_modified_resume(original_resume_path, target_company, job_role):
+    """
+    Simulates AI modifying the resume based on target company and job role.
+    For now, it just copies the file with a modified filename.
+    """
+    modified_resume_filename = f"modified_{target_company.replace(' ', '_')}_{job_role.replace(' ', '_')}.pdf"
+    modified_resume_path = os.path.join(app.config["UPLOAD_FOLDER"], modified_resume_filename)
+    
+    # Simulate AI resume modification (for now, just copying the file)
+    shutil.copy(original_resume_path, modified_resume_path)
+
+    return modified_resume_filename  # Return the new resume filename
+
+
 
 @app.route('/project-start', methods=['GET', 'POST'])
 @login_required
@@ -80,6 +115,14 @@ def project_start():
         if form.validate_on_submit():
             selected_industry = form.industry.data
             industry_other = form.industry_other.data if selected_industry == "other" else None
+
+            # Get user's original resume
+            original_resume_path = os.path.join(app.config["UPLOAD_FOLDER"], current_user.resume) if current_user.resume else None
+
+            # Generate AI-modified resume
+            modified_resume_filename = None
+            if original_resume_path:
+                modified_resume_filename = generate_modified_resume(original_resume_path, form.target_company.data, form.job_role.data)
 
             new_project = Project(
                 project_name=form.project_name.data,
@@ -92,7 +135,8 @@ def project_start():
                 salary_min=form.salary_min.data,
                 salary_max=form.salary_max.data,
                 target_company=form.target_company.data,
-                user_id=current_user.id
+                user_id=current_user.id,
+                modified_resume=modified_resume_filename  # 🔹 Store AI-modified resume
             )
 
             db.session.add(new_project)

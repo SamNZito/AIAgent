@@ -6,6 +6,8 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    resume = db.Column(db.String(255), nullable=True)  # 🔹 Store resume file path
+    linkedin_url = db.Column(db.String(255), nullable=True)  # 🔹 Store LinkedIn URL
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -16,8 +18,7 @@ class User(db.Model, UserMixin):
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    resume = db.Column(db.String(255), nullable=True)
-    linkedIn = db.Column(db.String(255), nullable=True)
+    modified_resume = db.Column(db.String(255), nullable=True)  # 🔹 Store AI-modified resume per project
 
     project_name = db.Column(db.String(150), nullable=False)
     job_role = db.Column(db.String(100), nullable=False)

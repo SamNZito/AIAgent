@@ -9,18 +9,41 @@
     {% if projects %}
         <div class="list-group mt-3">
             {% for project in projects %}
-                <div class="list-group-item">
-                    <h5>{{ project.project_name }}</h5>
-                    <p><strong>Target Job Role:</strong> {{ project.job_role }}</p>
-                    <p><strong>Industry:</strong> {{ project.industry }}</p>
-                    {% if project.industry == "other" and project.industry_other %}
-                        <p><strong>Custom Industry:</strong> {{ project.industry_other }}</p>
-                    {% endif %}
-                    <p><strong>Location:</strong> {{ project.target_location }}</p>
-                    <p><strong>Work Type:</strong> {{ project.work_type }}</p>
-                    <p><strong>Position Level:</strong> {{ project.position_level }}</p>
-                    <p><strong>Salary Range:</strong> ${{ project.salary_min }} - ${{ project.salary_max }}</p>
-                    <p><strong>Desired Companies:</strong> {{ project.target_company }}</p>
+                <div class="list-group-item shadow-sm p-4 mb-3 rounded bg-light">
+                    <h4 class="mb-3">{{ project.project_name }}</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Target Job Role:</strong> {{ project.job_role }}</p>
+                            <p><strong>Industry:</strong> {{ project.industry }}</p>
+                            {% if project.industry == "other" and project.industry_other %}
+                                <p><strong>Custom Industry:</strong> {{ project.industry_other }}</p>
+                            {% endif %}
+                            <p><strong>Location:</strong> {{ project.target_location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Work Type:</strong> {{ project.work_type }}</p>
+                            <p><strong>Position Level:</strong> {{ project.position_level }}</p>
+                            <p><strong>Salary Range:</strong> 
+                                ${{ project.salary_min }} - ${{ project.salary_max }}
+                            </p>
+                            <p><strong>Desired Companies:</strong> {{ project.target_company }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Display AI-modified Resume -->
+                    <div class="mt-3">
+                        {% if project.modified_resume %}
+                            <p><strong>Modified Resume:</strong> 
+                                <a href="{{ url_for('static', filename='uploads/' + project.modified_resume) }}" 
+                                   class="btn btn-outline-primary btn-sm" target="_blank">
+                                    Download Resume
+                                </a>
+                            </p>
+                        {% else %}
+                            <p class="text-muted">No modified resume available.</p>
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
         </div>
